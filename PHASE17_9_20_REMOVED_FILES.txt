@@ -1,0 +1,11 @@
+Phase 17.9.20 removes the legacy blueprint style pack from the project and runtime instances.
+
+When applying the replacement ZIP manually, delete this project folder before copying the new files:
+- src/main/resources/blueprints/colony_logistics_dev/
+
+At runtime, the mod now deletes this instance folder automatically on startup:
+- <gameDir>/blueprints/colony_logistics_dev/
+
+The active bundled style pack is now:
+- src/main/resources/blueprints/colony_logistics/
+- <gameDir>/blueprints/colony_logistics/

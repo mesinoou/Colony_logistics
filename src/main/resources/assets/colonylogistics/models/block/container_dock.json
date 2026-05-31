@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "colonylogistics:block/container_dock_front",
+    "north": "colonylogistics:block/container_dock_front",
+    "south": "colonylogistics:block/container_dock_back",
+    "east": "colonylogistics:block/container_dock_side",
+    "west": "colonylogistics:block/container_dock_side",
+    "up": "colonylogistics:block/container_dock_top",
+    "down": "colonylogistics:block/container_dock_bottom"
+  }
+}

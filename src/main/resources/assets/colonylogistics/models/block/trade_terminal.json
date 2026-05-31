@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "colonylogistics:block/trade_terminal_front",
+    "north": "colonylogistics:block/trade_terminal_front",
+    "south": "colonylogistics:block/trade_terminal_back",
+    "east": "colonylogistics:block/trade_terminal_side",
+    "west": "colonylogistics:block/trade_terminal_side",
+    "up": "colonylogistics:block/trade_terminal_top",
+    "down": "colonylogistics:block/trade_terminal_bottom"
+  }
+}

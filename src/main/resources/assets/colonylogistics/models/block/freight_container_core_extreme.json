@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "colonylogistics:block/freight_container_core_extreme"
+  }
+}

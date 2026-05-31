@@ -1,0 +1,31 @@
+{
+  "selector": "#colonylogistics:freight_container_blocks",
+  "priority": 1001,
+  "properties": {
+    "sable:mass": 2.0,
+    "sable:volume": 1.0,
+    "sable:friction": 1.0
+  },
+  "overrides": {
+    "weight_class=empty": {
+      "sable:mass": 0.25
+    },
+    "weight_class=light": {
+      "sable:mass": 1.0
+    },
+    "weight_class=medium": {
+      "sable:mass": 2.0
+    },
+    "weight_class=heavy": {
+      "sable:mass": 4.0
+    },
+    "weight_class=super_heavy": {
+      "sable:mass": 8.0,
+      "sable:inertia": [0.25, 0.25, 0.25]
+    },
+    "weight_class=extreme": {
+      "sable:mass": 16.0,
+      "sable:inertia": [0.35, 0.35, 0.35]
+    }
+  }
+}

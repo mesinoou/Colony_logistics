@@ -1,0 +1,16 @@
+{
+  "name": "Colony Logistics",
+  "icon": "icon.png",
+  "authors": [
+    "Colony Logistics Team"
+  ],
+  "desc": "MineColonies style pack for Colony Logistics buildings. This pack replaces the old colony_logistics_dev development pack.",
+  "mods": [
+    "minecraft",
+    "structurize",
+    "minecolonies",
+    "colonylogistics"
+  ],
+  "version": 1,
+  "pack-format": 1
+}

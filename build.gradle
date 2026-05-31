@@ -1,0 +1,105 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+    maven { url = 'https://maven.neoforged.net/releases' }
+    maven {
+        name = 'LDTTeam - Modding'
+        url = 'https://ldtteam.jfrog.io/ldtteam/modding/'
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = 'https://maven.ryanhcode.dev/releases'
+                name = 'RyanHCode Maven'
+            }
+        }
+        filter {
+            includeGroup('dev.ryanhcode.sable')
+            includeGroup('dev.ryanhcode.sable-companion')
+        }
+    }
+}
+
+neoForge {
+    version = neo_version
+    runs {
+        client { client() }
+        server { server() }
+        data { data() }
+    }
+    mods {
+        colonylogistics { sourceSet sourceSets.main }
+    }
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+
+// Structurize/MineColonies also scan the instance-level run/blueprints directory.
+// During development, copy the bundled temporary style pack there before launching.
+tasks.register('copyBlueprintsToRun', Copy) {
+    doFirst {
+        delete file('run/blueprints/colony_logistics_dev')
+        delete file('run/blueprints/colony_logistics')
+    }
+    from('src/main/resources/blueprints')
+    into('run/blueprints')
+}
+
+tasks.matching { it.name == 'runClient' || it.name == 'runServer' }.configureEach {
+    dependsOn tasks.named('copyBlueprintsToRun')
+}
+
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    // MineColonies building integration target.
+    // LDTTeam's own 1.21 addon uses com.ldtteam:minecolonies plus these required deps with transitive=false.
+    implementation("com.ldtteam:minecolonies:${project.minecolonies_version}") { transitive = false }
+    implementation("com.ldtteam:structurize:${project.structurize_version}") { transitive = false }
+    implementation("com.ldtteam:blockui:${project.blockui_version}") { transitive = false }
+    implementation("com.ldtteam:domum-ornamentum:${project.domum_ornamentum_version}") { transitive = false }
+    implementation("com.ldtteam:multipiston:${project.multipiston_version}") { transitive = false }
+
+    // First test-play build intentionally avoids compile-time Sable/Sable Companion API imports.
+    // Sable integration is data-driven through data/colonylogistics/physics_block_properties/*.json.
+    // Delivery range uses a reflection-based Companion resolver when the companion is present at runtime,
+    // and falls back to vanilla distance otherwise.
+    // Put the Sable jar in the run mods folder. Target runtime jar: sable-neoforge-1.21.1-1.1.3.jar
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+tasks.withType(ProcessResources).configureEach {
+    def replaceProperties = [
+            minecraft_version    : minecraft_version,
+            neo_version          : neo_version,
+            mod_id               : mod_id,
+            mod_name             : mod_name,
+            mod_license          : mod_license,
+            mod_version          : mod_version,
+            mod_authors          : mod_authors,
+            mod_description      : mod_description,
+            minecolonies_version : minecolonies_version,
+            sable_version        : sable_version
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "colonylogistics:block/logistics_office_front",
+    "north": "colonylogistics:block/logistics_office_front",
+    "south": "colonylogistics:block/logistics_office_back",
+    "east": "colonylogistics:block/logistics_office_side",
+    "west": "colonylogistics:block/logistics_office_side",
+    "up": "colonylogistics:block/logistics_office_top",
+    "down": "colonylogistics:block/logistics_office_bottom"
+  }
+}

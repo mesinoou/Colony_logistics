@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
+    }
+}
+
+// Do not enable dependencyResolutionManagement repositoriesMode FAIL_ON_PROJECT_REPOS here.
+// NeoForge ModDevGradle adds the required Minecraft/NeoForge repositories during plugin application
+// (for example "Mojang Minecraft Libraries"). Forbidding project repositories breaks even
+// `gradle wrapper` before a wrapper can be generated.
+
+rootProject.name = 'colony-logistics'

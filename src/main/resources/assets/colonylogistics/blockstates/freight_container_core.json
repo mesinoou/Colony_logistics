@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "weight_class=empty": {
+      "model": "colonylogistics:block/freight_container_core_empty"
+    },
+    "weight_class=light": {
+      "model": "colonylogistics:block/freight_container_core_light"
+    },
+    "weight_class=medium": {
+      "model": "colonylogistics:block/freight_container_core_medium"
+    },
+    "weight_class=heavy": {
+      "model": "colonylogistics:block/freight_container_core_heavy"
+    },
+    "weight_class=super_heavy": {
+      "model": "colonylogistics:block/freight_container_core_super_heavy"
+    },
+    "weight_class=extreme": {
+      "model": "colonylogistics:block/freight_container_core_extreme"
+    }
+  }
+}

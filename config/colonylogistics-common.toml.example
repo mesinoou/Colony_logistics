@@ -1,0 +1,199 @@
+[currency]
+# Default generated rewards use Trade Post for MineColonies base coin, not emerald.
+# Old in-world configs containing tradepost:coin or minecraft:emerald are normalized at runtime.
+tradePostCurrencyItem = "mctradepost:mctp_coin"
+fallbackCurrencyItem = "mctradepost:mctp_coin"
+useFallbackCurrencyWhenMissing = false
+# Generated freight and Trade Terminal escrow rewards are currency-only by default.
+playerTradeRewardsMustBeCurrency = true
+# Reward amounts are stored as base-coin value. When enabled, payouts use the largest registered denominations first.
+currencyExchangeEnabled = true
+# Leave baseCoinItem blank to use tradePostCurrencyItem as the base coin.
+baseCoinItem = ""
+goldCoinItem = "mctradepost:mctp_coin_gold"
+goldCoinValue = 8
+diamondCoinItem = "mctradepost:mctp_coin_diamond"
+diamondCoinValue = 64
+
+[dock]
+# Container Dock placement and delivery checks.
+# All spawned container standards use a unified 3-deep x 7-wide x 3-high block footprint.
+deliveryRadius = 18.0
+containerRecognitionRadius = 18.0
+containerSpawnDockHalfX = 8
+containerSpawnDockHalfZ = 8
+containerSpawnDockOccupiedHeight = 7
+containerSpawnHorizontalGap = 1
+containerSpawnBottomYOffset = 1
+containerSpawnTopGap = 1
+containerSpawnExtraRingGap = 2
+containerSpawnApronGridEnabled = true
+containerSpawnApronStartX = 4
+containerSpawnApronStartZ = 2
+containerSpawnApronColumns = 3
+containerSpawnApronRows = 2
+containerSpawnApronSpacingX = 4
+containerSpawnApronSpacingZ = 8
+
+[market]
+autoGenerateMarketJobs = true
+generationIntervalTicks = 12000
+autoGenerateInventoryJobs = true
+autoGenerateContainerJobs = true
+# Target open generated jobs per origin colony. The old key names are kept for save/config compatibility.
+testInventoryJobCapPerColony = 12
+testContainerJobCapPerColony = 6
+# Approximate share of newly generated jobs that should prefer low difficulty cargo.
+# Existing OPEN jobs are not rebalanced; this applies as the market tops up new jobs.
+lowDifficultyInventoryPercent = 50
+lowDifficultyContainerPercent = 45
+# Highest difficulty considered low for each pool: easy, normal, hard, or expert.
+# Container low jobs default to normal because Standard container jobs are normally NORMAL difficulty, not EASY.
+lowDifficultyInventoryMax = "normal"
+lowDifficultyContainerMax = "normal"
+purgeIntervalTicks = 72000
+
+[balance.buildingLevels.level0]
+maxOpenFreightJobs = 0
+maxContainerDocks = 0
+maxActiveContainerJobs = 0
+maxPlayerTradeContracts = 0
+maxContainerStandard = "none"
+inventoryFreightEnabled = false
+containerFreightEnabled = false
+
+[balance.buildingLevels.level1]
+maxOpenFreightJobs = 6
+maxContainerDocks = 0
+maxActiveContainerJobs = 0
+maxPlayerTradeContracts = 3
+maxContainerStandard = "none"
+inventoryFreightEnabled = true
+containerFreightEnabled = false
+
+[balance.buildingLevels.level2]
+maxOpenFreightJobs = 10
+maxContainerDocks = 1
+maxActiveContainerJobs = 2
+maxPlayerTradeContracts = 5
+maxContainerStandard = "standard"
+inventoryFreightEnabled = true
+containerFreightEnabled = true
+
+[balance.buildingLevels.level3]
+maxOpenFreightJobs = 14
+maxContainerDocks = 2
+maxActiveContainerJobs = 4
+maxPlayerTradeContracts = 8
+maxContainerStandard = "standard"
+inventoryFreightEnabled = true
+containerFreightEnabled = true
+
+[balance.buildingLevels.level4]
+maxOpenFreightJobs = 20
+maxContainerDocks = 3
+maxActiveContainerJobs = 6
+maxPlayerTradeContracts = 12
+maxContainerStandard = "large"
+inventoryFreightEnabled = true
+containerFreightEnabled = true
+
+[balance.buildingLevels.level5]
+maxOpenFreightJobs = 30
+maxContainerDocks = 4
+maxActiveContainerJobs = 10
+maxPlayerTradeContracts = 20
+maxContainerStandard = "heavy"
+inventoryFreightEnabled = true
+containerFreightEnabled = true
+
+[balance.carrierRequirements]
+inventoryRequiredCarrierLevel = 1
+standardRequiredCarrierLevel = 2
+largeRequiredCarrierLevel = 4
+heavyRequiredCarrierLevel = 5
+
+[balance.rewards.inventory]
+base = 20
+minDistanceBonus = 1
+distanceDivisor = 20
+cargoValueMultiplier = 1.0
+cargoWeightMultiplier = 2.0
+fragilityMultiplier = 8.0
+globalMultiplier = 1.0
+
+[balance.rewards.container]
+base = 100
+minDistanceBonus = 10
+distanceDivisor = 8
+cargoValueMultiplier = 1.0
+cargoWeightMultiplier = 2.0
+sizeVolumeMultiplier = 2.0
+sizeBaseWeightMultiplier = 0.5
+emptyWeightClassBonus = 0
+lightWeightClassBonus = 25
+mediumWeightClassBonus = 75
+heavyWeightClassBonus = 150
+superHeavyWeightClassBonus = 300
+extremeWeightClassBonus = 600
+standardMultiplier = 1.0
+largeMultiplier = 3.0
+heavyMultiplier = 5.0
+globalMultiplier = 1.0
+
+[balance.deadlines]
+# 24000 ticks = one Minecraft day.
+# Default is unlimited. Set any window to a positive tick value to enable expiration.
+# Generated contracts store deadline/expires as 0 when a window is unlimited.
+pickupWindowTicks = 0
+inventoryDeliveryWindowTicks = 0
+standardContainerDeliveryWindowTicks = 0
+largeContainerDeliveryWindowTicks = 0
+heavyContainerDeliveryWindowTicks = 0
+generatedJobsAllowLateDelivery = true
+lateDeliveryRewardPercent = 50
+# Assigned carriers can cancel their own generated freight from the Logistics Office.
+generatedJobsAllowCarrierCancel = true
+# If true, cancellation increments failed jobs and applies failedJobReputationPenalty.
+generatedJobsCancelCountsAsFailed = false
+# If false, container contracts cannot be cancelled after any physical container has spawned.
+generatedJobsAllowCancelAfterContainerSpawn = true
+
+[balance.containerGeneration]
+# Relative generation weights. Set a weight to 0 to stop that standard from auto-generating.
+standardGenerationWeight = 6
+largeGenerationWeight = 3
+heavyGenerationWeight = 1
+# Number of physical 3x7x3 containers required per contract.
+standardDefaultContainerCount = 2
+largeDefaultContainerCount = 2
+heavyDefaultContainerCount = 3
+largeFragileContainerCount = 3
+
+[balance.carrierProfile]
+reputationGainRewardDivisor = 10
+minReputationGainPerJob = 1
+failedJobReputationPenalty = 10
+level2CompletedJobs = 5
+level2Reputation = 25
+level3CompletedJobs = 15
+level3Reputation = 100
+level4CompletedJobs = 35
+level4Reputation = 250
+level5CompletedJobs = 75
+level5Reputation = 600
+
+[testing]
+# Multiplayer defaults: same-player Trade Terminal fulfillment and same-colony generated freight are disabled.
+# Turn these on only for temporary single-player/local diagnostics.
+allowSelfDeliveryForTesting = false
+allowLoopbackFreightForTesting = false
+allowLoopbackContainerFreightForTesting = false
+# Multiplayer beta logs are enabled by default so route generation and packet rejects are visible in server logs.
+debugMultiplayerNetworkLogging = true
+debugContractLifecycleLogging = true
+
+# Runtime-only helpers:
+# /colonylogistics testing ... still overrides these values without writing back to this file.
+# Balance summary:
+# /colonylogistics balance show

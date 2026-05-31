@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "colonylogistics:block/trade_terminal" }
+  }
+}

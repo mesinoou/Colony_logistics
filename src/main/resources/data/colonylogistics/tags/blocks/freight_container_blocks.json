@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "colonylogistics:freight_container_core",
+    "colonylogistics:freight_container_part"
+  ]
+}

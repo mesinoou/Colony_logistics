@@ -1,0 +1,7 @@
+<window size="190 244" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/ldtteam/BlockUI/version/1.20.1/src/main/resources/assets/blockui/gui/block_ui.xsd">
+    <layout source="minecolonies:gui/layouthuts/layouthutpageactionsmin.xml"/>
+
+    <text id="desc" size="154 12" pos="18 30" textalign="MIDDLE" color="black" label="$(gui.colonylogistics.minecolonies_tab.header)"/>
+    <text size="154 42" pos="18 50" textalign="MIDDLE" color="black" label="$(gui.colonylogistics.minecolonies_tab.body)"/>
+    <button id="open_colony_logistics" size="129 17" pos="30 136" color="black" source="minecolonies:textures/gui/builderhut/builder_button_medium_large.png" label="$(gui.colonylogistics.minecolonies_tab.open)"/>
+</window>
