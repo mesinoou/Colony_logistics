@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse / VSCode
+.classpath
+.project
+.settings/
+.vscode/
+
+# Minecraft run directory
+run/
+runs/
+
+# Logs / crash reports
+logs/
+crash-reports/
+*.log
+
+# Generated / temporary
+tmp/
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Archives / distribution artifacts
+*.zip
+*.jar
+
+# Keep Gradle wrapper
+!gradle/wrapper/gradle-wrapper.jar
