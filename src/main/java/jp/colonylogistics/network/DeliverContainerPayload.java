@@ -14,8 +14,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.Optional;
 
 /** C2S request sent by the Container Dock Deliver button. */
 public record DeliverContainerPayload(BlockPos dockPos, BlockPos corePos) implements CustomPacketPayload {
@@ -66,16 +67,18 @@ public record DeliverContainerPayload(BlockPos dockPos, BlockPos corePos) implem
                 return;
             }
 
-            BlockEntity containerEntity = player.serverLevel().getBlockEntity(payload.corePos());
-            if (!(containerEntity instanceof FreightContainerCoreBlockEntity container)) {
-                MultiplayerDebugLog.networkRejected(player, "DeliverContainerPayload", payload.dockPos(), "INVALID_CONTAINER_CORE", "core=" + MultiplayerDebugLog.pos(payload.corePos()) + " blockEntity=" + (containerEntity == null ? "null" : containerEntity.getClass().getName()));
+            ContainerDockService service = new ContainerDockService();
+            Optional<FreightContainerCoreBlockEntity> resolvedContainer = service.findCoreForContainerBlock(player.serverLevel(), payload.corePos());
+            if (resolvedContainer.isEmpty()) {
+                MultiplayerDebugLog.networkRejected(player, "DeliverContainerPayload", payload.dockPos(), "INVALID_CONTAINER_CORE", "core=" + MultiplayerDebugLog.pos(payload.corePos()) + " block=" + player.serverLevel().getBlockState(payload.corePos()).getBlock());
                 SafeSystemChat.send(player, Component.translatable("message.colonylogistics.dock.invalid_container"));
                 player.closeContainer();
                 return;
             }
 
-            ContainerDockService.DeliveryResult result = new ContainerDockService().deliverContainer(player, payload.dockPos(), container);
-            MultiplayerDebugLog.networkResult(player, "DeliverContainerPayload", payload.dockPos(), result.name(), "core=" + MultiplayerDebugLog.pos(payload.corePos()));
+            FreightContainerCoreBlockEntity container = resolvedContainer.get();
+            ContainerDockService.DeliveryResult result = service.deliverContainer(player, payload.dockPos(), container);
+            MultiplayerDebugLog.networkResult(player, "DeliverContainerPayload", payload.dockPos(), result.name(), "requested=" + MultiplayerDebugLog.pos(payload.corePos()) + " resolvedCore=" + MultiplayerDebugLog.pos(container.getBlockPos()));
             SafeSystemChat.send(player, ContainerDockService.deliveryResultMessage(result));
             player.closeContainer();
         });

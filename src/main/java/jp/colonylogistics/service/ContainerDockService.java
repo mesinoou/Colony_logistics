@@ -262,7 +262,7 @@ public final class ContainerDockService {
             }
         }
 
-        boolean removed = builder.remove(level, container.getBlockPos(), manifest);
+        ContainerMultiblockBuilder.RemovalResult removal = builder.removeWithResult(level, container.getBlockPos(), manifest);
         data.replaceContract(progressed);
         if (progressed.status() == ContractStatus.COMPLETED) {
             data.colonyState(contract.originColonyId()).decrementActiveContainerJobs();
@@ -274,9 +274,13 @@ public final class ContainerDockService {
             SafeSystemChat.send(player, Component.translatable("message.colonylogistics.dock.partial_delivery", progressed.deliveredContainerCount(), progressed.requiredContainerCount()));
         }
         data.setDirty();
-        DeliveryResult result = removed ? DeliveryResult.SUCCESS : DeliveryResult.REMOVED_NOTHING;
-        MultiplayerDebugLog.containerAction(player, "deliver", result.name(), dockPos, container.getBlockPos(), MultiplayerDebugLog.contractSummary(progressed) + " " + MultiplayerDebugLog.manifestSummary(manifest));
+        DeliveryResult result = removal.removedAny() ? DeliveryResult.SUCCESS : DeliveryResult.REMOVED_NOTHING;
+        MultiplayerDebugLog.containerAction(player, "deliver", result.name(), dockPos, container.getBlockPos(), MultiplayerDebugLog.contractSummary(progressed) + " " + MultiplayerDebugLog.manifestSummary(manifest) + " " + removal.debugSummary());
         return result;
+    }
+
+    public Optional<FreightContainerCoreBlockEntity> findCoreForContainerBlock(ServerLevel level, BlockPos containerPos) {
+        return builder.findCoreForContainerBlock(level, containerPos);
     }
 
     /**

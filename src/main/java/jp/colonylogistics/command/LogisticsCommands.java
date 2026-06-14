@@ -433,18 +433,21 @@ public final class LogisticsCommands {
     private static int deliverContainer(CommandSourceStack source, BlockPos dockPos, BlockPos corePos) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
 
-        if (!(source.getLevel().getBlockEntity(corePos) instanceof FreightContainerCoreBlockEntity container)) {
-            source.sendFailure(Component.literal("No Freight Container Core at " + corePos.toShortString()));
+        ContainerDockService service = new ContainerDockService();
+        var resolvedContainer = service.findCoreForContainerBlock(source.getLevel(), corePos);
+        if (resolvedContainer.isEmpty()) {
+            source.sendFailure(Component.literal("No Freight Container Core or Part at " + corePos.toShortString()));
             return 0;
         }
 
-        ContainerDockService.DeliveryResult result = new ContainerDockService().deliverContainer(player, dockPos, container);
+        FreightContainerCoreBlockEntity container = resolvedContainer.get();
+        ContainerDockService.DeliveryResult result = service.deliverContainer(player, dockPos, container);
         if (result != ContainerDockService.DeliveryResult.SUCCESS && result != ContainerDockService.DeliveryResult.REMOVED_NOTHING) {
             source.sendFailure(ContainerDockService.deliveryResultMessage(result));
             return 0;
         }
 
-        source.sendSuccess(() -> ContainerDockService.deliveryResultMessage(result), true);
+        source.sendSuccess(() -> ContainerDockService.deliveryResultMessage(result).copy().append(Component.literal(" @ " + container.getBlockPos().toShortString())), true);
         return 1;
     }
 

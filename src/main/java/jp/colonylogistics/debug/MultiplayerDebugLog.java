@@ -171,6 +171,7 @@ public final class MultiplayerDebugLog {
                 + " destDock=" + pos(manifest.destinationDockPos())
                 + " size=" + manifest.size()
                 + " weight=" + manifest.weightClass()
+                + " facing=" + manifest.facing()
                 + " batch=" + manifest.batchIndex() + "/" + manifest.batchCount()
                 + " sealed=" + manifest.sealed();
     }
