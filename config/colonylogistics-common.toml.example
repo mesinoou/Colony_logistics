@@ -1,19 +1,20 @@
 [currency]
-# Default generated rewards use Trade Post for MineColonies base coin, not emerald.
-# Old in-world configs containing tradepost:coin or minecraft:emerald are normalized at runtime.
-tradePostCurrencyItem = "mctradepost:mctp_coin"
-fallbackCurrencyItem = "mctradepost:mctp_coin"
+# Default generated rewards use Lightman's Currency coins, not emerald.
+# Old in-world configs containing tradepost:coin, mctradepost:* or minecraft:emerald are normalized at runtime.
+# Legacy key kept for old config files; prefer baseCoinItem below for new setups.
+tradePostCurrencyItem = "lightmanscurrency:coin_copper"
+fallbackCurrencyItem = "lightmanscurrency:coin_copper"
 useFallbackCurrencyWhenMissing = false
 # Generated freight and Trade Terminal escrow rewards are currency-only by default.
 playerTradeRewardsMustBeCurrency = true
 # Reward amounts are stored as base-coin value. When enabled, payouts use the largest registered denominations first.
 currencyExchangeEnabled = true
-# Leave baseCoinItem blank to use tradePostCurrencyItem as the base coin.
-baseCoinItem = ""
-goldCoinItem = "mctradepost:mctp_coin_gold"
-goldCoinValue = 8
-diamondCoinItem = "mctradepost:mctp_coin_diamond"
-diamondCoinValue = 64
+# Match these item IDs and values to Lightman's Currency Master Coin List if your server customizes it.
+baseCoinItem = "lightmanscurrency:coin_copper"
+goldCoinItem = "lightmanscurrency:coin_gold"
+goldCoinValue = 100
+diamondCoinItem = "lightmanscurrency:coin_diamond"
+diamondCoinValue = 10000
 
 [dock]
 # Container Dock placement and delivery checks.

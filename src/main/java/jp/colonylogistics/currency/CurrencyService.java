@@ -15,19 +15,18 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Resolves and pays the configured Trade Post currency item.
+ * Resolves and pays the configured item-based currency.
  *
  * <p>Phase 17.9 centralizes all generated-freight and player-trade payouts here.
- * Trade Post for MineColonies integration remains item-id based only: Colony
- * Logistics never imports Trade Post transport or economy code directly.</p>
+ * The integration remains item-id based only: Colony Logistics does not import
+ * external economy or wallet APIs directly.</p>
  *
  * <p>Phase 17.9.1 removes the emerald development fallback. Old configs using
- * {@code tradepost:coin} or {@code minecraft:emerald} are normalized to Trade
- * Post's base coin id, {@code mctradepost:mctp_coin}.</p>
+ * {@code tradepost:coin} or {@code minecraft:emerald} are normalized to the
+ * configured base coin.</p>
  *
- * <p>Phase 17.9.4 treats reward amounts as base-coin value and can pay them with
- * larger Trade Post coin denominations. By default, gold coins are worth eight
- * base coins and diamond coins are worth sixty-four base coins.</p>
+ * <p>Issue #2 migrates the default currency to Lightman's Currency coins while
+ * keeping legacy Trade Post ids readable for old saves/configs.</p>
  */
 public final class CurrencyService {
     public ResourceLocation defaultRewardCurrencyItemId() {
@@ -35,7 +34,7 @@ public final class CurrencyService {
         if (isRegisteredItem(configured)) {
             return configured;
         }
-        ResourceLocation legacyConfigured = ColonyLogisticsConfig.tradePostCurrencyItemId();
+        ResourceLocation legacyConfigured = ColonyLogisticsConfig.legacyTradePostCurrencyItemId();
         if (isRegisteredItem(legacyConfigured)) {
             return legacyConfigured;
         }
@@ -45,9 +44,9 @@ public final class CurrencyService {
                 return fallback;
             }
         }
-        // Keep the configured Trade Post currency in generated contract data and
-        // GUI rows even when the dependency is missing, so the failure is visible
-        // instead of silently presenting vanilla emeralds as the default reward.
+        // Keep the configured currency in generated contract data and GUI rows
+        // even when the dependency is missing, so the failure is visible instead
+        // of silently presenting vanilla emeralds as the default reward.
         return configured;
     }
 
@@ -65,8 +64,9 @@ public final class CurrencyService {
             return defaultReward(0);
         }
         ResourceLocation active = defaultRewardCurrencyItemId();
-        if (ColonyLogisticsConfig.isLegacyDefaultRewardItem(reward.currencyItemId())) {
-            return new RewardSpec(active, reward.currencyAmount());
+        int legacyValue = ColonyLogisticsConfig.legacyCurrencyBaseValue(reward.currencyItemId());
+        if (legacyValue > 0) {
+            return new RewardSpec(active, safeMultiply(reward.currencyAmount(), legacyValue));
         }
         Optional<CurrencyDenomination> denomination = denominationForItem(reward.currencyItemId());
         if (denomination.isPresent()) {
@@ -90,8 +90,10 @@ public final class CurrencyService {
     public Optional<RewardSpec> payableReward(RewardSpec reward, int amount) {
         int clampedAmount = Math.max(0, amount);
         ResourceLocation preferred = reward.currencyItemId();
-        if (ColonyLogisticsConfig.isLegacyDefaultRewardItem(preferred)) {
+        int legacyValue = ColonyLogisticsConfig.legacyCurrencyBaseValue(preferred);
+        if (legacyValue > 0) {
             preferred = defaultRewardCurrencyItemId();
+            clampedAmount = safeMultiply(clampedAmount, legacyValue);
         }
 
         if (ColonyLogisticsConfig.currencyExchangeEnabled()) {

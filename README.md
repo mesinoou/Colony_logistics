@@ -81,10 +81,11 @@ Domum Ornamentum
 Multi-Piston
 Create / Create Aeronautics
 Sable
-Trade Post for MineColonies
+Lightman's Currency
 ```
 
-Trade Post for MineColonies とは、主に通貨アイテム `mctradepost:mctp_coin` の利用で連携しています。
+Lightman's Currency とは、主に通貨アイテム `lightmanscurrency:coin_copper` / `coin_gold` / `coin_diamond` の利用で連携しています。
+報酬処理は item ID ベースで行い、Lightman's Currency の内部 API には直接依存しません。
 輸送契約や物流処理そのものは Colony Logistics 側で管理します。
 
 ## 現在の実装状況
@@ -98,8 +99,8 @@ Trade Post for MineColonies とは、主に通貨アイテム `mctradepost:mctp_
 - 3×7×3 コンテナ配送
 - 複数コロニー間の契約生成
 - 契約の受注・キャンセル・納品
-- mctradepost:mctp_coin を用いた報酬支払い
-- Gold / Diamond coin への両替対応
+- lightmanscurrency:coin_copper を基準にした報酬支払い
+- Lightman's Currency の Gold / Diamond coin への両替対応
 - Trade Terminal によるプレイヤー間取引
 - マルチプレイ向けのネットワーク安全化
 - Dedicated server での client-only class 分離
@@ -143,6 +144,22 @@ Linux / macOS:
 
 ```text
 build/libs/
+```
+
+## 通貨設定
+
+Colony Logistics の報酬額は `lightmanscurrency:coin_copper` を 1 とする基準値で保存されます。
+デフォルトでは `coin_gold = 100`、`coin_diamond = 10000` として支払い時に上位コインへ分解します。
+
+Lightman's Currency 側の Master Coin List を変更したサーバーでは、`config/colonylogistics-common.toml` の以下も同じ換算に合わせてください。
+
+```toml
+[currency]
+baseCoinItem = "lightmanscurrency:coin_copper"
+goldCoinItem = "lightmanscurrency:coin_gold"
+goldCoinValue = 100
+diamondCoinItem = "lightmanscurrency:coin_diamond"
+diamondCoinValue = 10000
 ```
 
 ## 開発用コマンド例

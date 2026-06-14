@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class ColonyLogisticsConfig {
     public static final ModConfigSpec SPEC;
 
-    private static final ModConfigSpec.ConfigValue<String> TRADE_POST_CURRENCY_ITEM;
+    private static final ModConfigSpec.ConfigValue<String> LEGACY_TRADE_POST_CURRENCY_ITEM;
     private static final ModConfigSpec.ConfigValue<String> FALLBACK_CURRENCY_ITEM;
     private static final ModConfigSpec.BooleanValue USE_FALLBACK_CURRENCY_WHEN_MISSING;
     private static final ModConfigSpec.BooleanValue PLAYER_TRADE_REWARDS_MUST_BE_CURRENCY;
@@ -136,9 +136,12 @@ public final class ColonyLogisticsConfig {
     private static Boolean overrideAllowLoopbackFreightForTesting;
     private static Boolean overrideAllowLoopbackContainerFreightForTesting;
 
-    private static final ResourceLocation DEFAULT_TRADE_POST_CURRENCY = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin");
-    private static final ResourceLocation DEFAULT_TRADE_POST_GOLD_COIN = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin_gold");
-    private static final ResourceLocation DEFAULT_TRADE_POST_DIAMOND_COIN = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin_diamond");
+    private static final ResourceLocation DEFAULT_LIGHTMANS_BASE_COIN = ResourceLocation.fromNamespaceAndPath("lightmanscurrency", "coin_copper");
+    private static final ResourceLocation DEFAULT_LIGHTMANS_GOLD_COIN = ResourceLocation.fromNamespaceAndPath("lightmanscurrency", "coin_gold");
+    private static final ResourceLocation DEFAULT_LIGHTMANS_DIAMOND_COIN = ResourceLocation.fromNamespaceAndPath("lightmanscurrency", "coin_diamond");
+    private static final ResourceLocation LEGACY_TRADE_POST_CURRENCY = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin");
+    private static final ResourceLocation LEGACY_TRADE_POST_GOLD_COIN = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin_gold");
+    private static final ResourceLocation LEGACY_TRADE_POST_DIAMOND_COIN = ResourceLocation.fromNamespaceAndPath("mctradepost", "mctp_coin_diamond");
     private static final ResourceLocation LEGACY_PLACEHOLDER_CURRENCY = ResourceLocation.fromNamespaceAndPath("tradepost", "coin");
     private static final ResourceLocation LEGACY_EMERALD_FALLBACK = ResourceLocation.withDefaultNamespace("emerald");
 
@@ -146,54 +149,52 @@ public final class ColonyLogisticsConfig {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.push("currency");
-        TRADE_POST_CURRENCY_ITEM = builder
+        LEGACY_TRADE_POST_CURRENCY_ITEM = builder
                 .comment(
-                        "Currency item used for generated freight rewards.",
-                        "Set this to the Trade Post for MineColonies currency item id used by your pack.",
-                        "Phase 17.9.1 default is mctradepost:mctp_coin, the Trade Post base coin.",
-                        "Old configs that still contain tradepost:coin are normalized to mctradepost:mctp_coin at runtime."
+                        "Legacy key kept so old configs still load. Prefer baseCoinItem for new packs.",
+                        "Old Trade Post values are normalized to Lightman's Currency coins at runtime."
                 )
-                .define("tradePostCurrencyItem", "mctradepost:mctp_coin");
+                .define("tradePostCurrencyItem", "lightmanscurrency:coin_copper");
         FALLBACK_CURRENCY_ITEM = builder
                 .comment(
-                        "Optional fallback reward item when the configured Trade Post currency item is not registered.",
-                        "Do not use emerald as the normal fallback; old minecraft:emerald values are ignored and normalized to the Trade Post coin."
+                        "Optional fallback reward item when the configured Lightman's Currency item is not registered.",
+                        "Old minecraft:emerald and Trade Post values are normalized to Lightman's Currency coins."
                 )
-                .define("fallbackCurrencyItem", "mctradepost:mctp_coin");
+                .define("fallbackCurrencyItem", "lightmanscurrency:coin_copper");
         USE_FALLBACK_CURRENCY_WHEN_MISSING = builder
                 .comment(
                         "If false, payouts fail instead of silently using a fallback when the configured currency is missing.",
-                        "Phase 17.9.1 defaults this to false so missing Trade Post currency is visible during multiplayer prep."
+                        "Default false keeps missing Lightman's Currency installs visible during multiplayer prep."
                 )
                 .define("useFallbackCurrencyWhenMissing", false);
         PLAYER_TRADE_REWARDS_MUST_BE_CURRENCY = builder
                 .comment(
                         "When true, Trade Terminal escrow rewards must be a configured currency denomination only.",
-                        "This is the normal multiplayer-safe mode: players can still request any item, but rewards are paid as Trade Post currency.",
+                        "This is the normal multiplayer-safe mode: players can still request any item, but rewards are paid as Lightman's Currency coins.",
                         "Set false only for temporary debugging of legacy full-item escrow saves."
                 )
                 .define("playerTradeRewardsMustBeCurrency", true);
         CURRENCY_EXCHANGE_ENABLED = builder
                 .comment(
                         "When true, reward amounts are treated as base-coin value and paid with the largest registered denominations first.",
-                        "Default Trade Post denomination values are base=1, gold=8, diamond=64."
+                        "Default Lightman's Currency denomination values are copper=1, gold=100, diamond=10000."
                 )
                 .define("currencyExchangeEnabled", true);
         BASE_COIN_ITEM = builder
                 .comment("Base coin item id. Generated contract rewards are stored in this unit.")
-                .define("baseCoinItem", "");
+                .define("baseCoinItem", "lightmanscurrency:coin_copper");
         GOLD_COIN_ITEM = builder
                 .comment("Gold coin denomination item id. Set to an unregistered id or disable currencyExchangeEnabled to ignore it.")
-                .define("goldCoinItem", "mctradepost:mctp_coin_gold");
+                .define("goldCoinItem", "lightmanscurrency:coin_gold");
         GOLD_COIN_VALUE = builder
                 .comment("Base-coin value of one gold coin denomination.")
-                .defineInRange("goldCoinValue", 8, 1, 1_000_000);
+                .defineInRange("goldCoinValue", 100, 1, 1_000_000);
         DIAMOND_COIN_ITEM = builder
                 .comment("Diamond coin denomination item id. Set to an unregistered id or disable currencyExchangeEnabled to ignore it.")
-                .define("diamondCoinItem", "mctradepost:mctp_coin_diamond");
+                .define("diamondCoinItem", "lightmanscurrency:coin_diamond");
         DIAMOND_COIN_VALUE = builder
                 .comment("Base-coin value of one diamond coin denomination.")
-                .defineInRange("diamondCoinValue", 64, 1, 1_000_000);
+                .defineInRange("diamondCoinValue", 10000, 1, 1_000_000);
         builder.pop();
 
         builder.push("dock");
@@ -494,23 +495,31 @@ public final class ColonyLogisticsConfig {
         SPEC = builder.build();
     }
 
-    public static ResourceLocation defaultTradePostCurrencyItemId() { return DEFAULT_TRADE_POST_CURRENCY; }
-    public static ResourceLocation tradePostCurrencyItemId() { return normalizeLegacyCurrencyId(parseLocation(TRADE_POST_CURRENCY_ITEM.get(), DEFAULT_TRADE_POST_CURRENCY)); }
-    public static ResourceLocation fallbackCurrencyItemId() { return normalizeLegacyFallbackCurrencyId(parseLocation(FALLBACK_CURRENCY_ITEM.get(), DEFAULT_TRADE_POST_CURRENCY)); }
+    public static ResourceLocation defaultCurrencyItemId() { return DEFAULT_LIGHTMANS_BASE_COIN; }
+    public static ResourceLocation legacyTradePostCurrencyItemId() { return normalizeLegacyCurrencyId(parseLocation(LEGACY_TRADE_POST_CURRENCY_ITEM.get(), DEFAULT_LIGHTMANS_BASE_COIN)); }
+    public static ResourceLocation fallbackCurrencyItemId() { return normalizeLegacyFallbackCurrencyId(parseLocation(FALLBACK_CURRENCY_ITEM.get(), DEFAULT_LIGHTMANS_BASE_COIN)); }
     public static boolean useFallbackCurrencyWhenMissing() { return USE_FALLBACK_CURRENCY_WHEN_MISSING.get(); }
     public static boolean playerTradeRewardsMustBeCurrency() { return PLAYER_TRADE_REWARDS_MUST_BE_CURRENCY.get(); }
     public static boolean currencyExchangeEnabled() { return CURRENCY_EXCHANGE_ENABLED.get(); }
     public static ResourceLocation currencyBaseCoinItemId() {
         String raw = BASE_COIN_ITEM.get();
         if (raw == null || raw.isBlank()) {
-            return tradePostCurrencyItemId();
+            return legacyTradePostCurrencyItemId();
         }
-        return normalizeLegacyCurrencyId(parseLocation(raw, tradePostCurrencyItemId()));
+        return normalizeLegacyCurrencyId(parseLocation(raw, legacyTradePostCurrencyItemId()));
     }
-    public static ResourceLocation currencyGoldCoinItemId() { return normalizeLegacyCurrencyId(parseLocation(GOLD_COIN_ITEM.get(), DEFAULT_TRADE_POST_GOLD_COIN)); }
-    public static int currencyGoldCoinValue() { return GOLD_COIN_VALUE.get(); }
-    public static ResourceLocation currencyDiamondCoinItemId() { return normalizeLegacyCurrencyId(parseLocation(DIAMOND_COIN_ITEM.get(), DEFAULT_TRADE_POST_DIAMOND_COIN)); }
-    public static int currencyDiamondCoinValue() { return DIAMOND_COIN_VALUE.get(); }
+    public static ResourceLocation currencyGoldCoinItemId() { return normalizeLegacyCurrencyId(parseLocation(GOLD_COIN_ITEM.get(), DEFAULT_LIGHTMANS_GOLD_COIN)); }
+    public static int currencyGoldCoinValue() {
+        ResourceLocation rawItem = parseLocation(GOLD_COIN_ITEM.get(), DEFAULT_LIGHTMANS_GOLD_COIN);
+        int value = GOLD_COIN_VALUE.get();
+        return LEGACY_TRADE_POST_GOLD_COIN.equals(rawItem) && value == 8 ? 100 : value;
+    }
+    public static ResourceLocation currencyDiamondCoinItemId() { return normalizeLegacyCurrencyId(parseLocation(DIAMOND_COIN_ITEM.get(), DEFAULT_LIGHTMANS_DIAMOND_COIN)); }
+    public static int currencyDiamondCoinValue() {
+        ResourceLocation rawItem = parseLocation(DIAMOND_COIN_ITEM.get(), DEFAULT_LIGHTMANS_DIAMOND_COIN);
+        int value = DIAMOND_COIN_VALUE.get();
+        return LEGACY_TRADE_POST_DIAMOND_COIN.equals(rawItem) && value == 64 ? 10000 : value;
+    }
 
     public static double dockDeliveryRadius() { return DOCK_DELIVERY_RADIUS.get(); }
     public static double dockContainerRecognitionRadius() { return DOCK_CONTAINER_RECOGNITION_RADIUS.get(); }
@@ -693,7 +702,14 @@ public final class ColonyLogisticsConfig {
 
     public static String runtimeTestOverrideLabel() { return hasRuntimeTestOverrides() ? "runtime overrides active" : "TOML defaults"; }
 
-    public static boolean isLegacyDefaultRewardItem(ResourceLocation itemId) { return LEGACY_PLACEHOLDER_CURRENCY.equals(itemId) || LEGACY_EMERALD_FALLBACK.equals(itemId); }
+    public static boolean isLegacyDefaultRewardItem(ResourceLocation itemId) { return legacyCurrencyBaseValue(itemId) > 0; }
+
+    public static int legacyCurrencyBaseValue(ResourceLocation itemId) {
+        if (LEGACY_TRADE_POST_GOLD_COIN.equals(itemId)) return 8;
+        if (LEGACY_TRADE_POST_DIAMOND_COIN.equals(itemId)) return 64;
+        if (LEGACY_PLACEHOLDER_CURRENCY.equals(itemId) || LEGACY_EMERALD_FALLBACK.equals(itemId) || LEGACY_TRADE_POST_CURRENCY.equals(itemId)) return 1;
+        return 0;
+    }
 
     private static int levelIndex(int level) { return Math.max(0, Math.min(5, level)); }
     private static java.util.Optional<ContainerStandard> parseContainerStandard(String value) {
@@ -714,10 +730,14 @@ public final class ColonyLogisticsConfig {
         }
     }
 
-    private static ResourceLocation normalizeLegacyCurrencyId(ResourceLocation itemId) { return isLegacyDefaultRewardItem(itemId) ? DEFAULT_TRADE_POST_CURRENCY : itemId; }
+    private static ResourceLocation normalizeLegacyCurrencyId(ResourceLocation itemId) {
+        if (LEGACY_TRADE_POST_GOLD_COIN.equals(itemId)) return DEFAULT_LIGHTMANS_GOLD_COIN;
+        if (LEGACY_TRADE_POST_DIAMOND_COIN.equals(itemId)) return DEFAULT_LIGHTMANS_DIAMOND_COIN;
+        return isLegacyDefaultRewardItem(itemId) ? DEFAULT_LIGHTMANS_BASE_COIN : itemId;
+    }
 
     private static ResourceLocation normalizeLegacyFallbackCurrencyId(ResourceLocation itemId) {
-        return LEGACY_EMERALD_FALLBACK.equals(itemId) ? DEFAULT_TRADE_POST_CURRENCY : normalizeLegacyCurrencyId(itemId);
+        return LEGACY_EMERALD_FALLBACK.equals(itemId) ? DEFAULT_LIGHTMANS_BASE_COIN : normalizeLegacyCurrencyId(itemId);
     }
 
     private static ResourceLocation parseLocation(String raw, ResourceLocation fallback) {

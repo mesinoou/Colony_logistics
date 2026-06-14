@@ -50,7 +50,7 @@ public final class ContractNbt {
                 tag.contains("DestinationDockPos") ? Optional.of(BlockPos.of(tag.getLong("DestinationDockPos"))) : Optional.empty(),
                 tag.hasUUID("AssignedPlayer") ? Optional.of(tag.getUUID("AssignedPlayer")) : Optional.empty(),
                 tag.contains("FreightSpec") ? Optional.of(loadFreightSpec(tag.getCompound("FreightSpec"))) : Optional.empty(),
-                tag.contains("Reward") ? loadReward(tag.getCompound("Reward")) : new RewardSpec(ColonyLogisticsConfig.defaultTradePostCurrencyItemId(), 0),
+                tag.contains("Reward") ? loadReward(tag.getCompound("Reward")) : new RewardSpec(ColonyLogisticsConfig.defaultCurrencyItemId(), 0),
                 tag.getLong("CreatedGameTime"),
                 tag.getLong("ExpiresGameTime"),
                 tag.contains("RequiredContainerCount") ? tag.getInt("RequiredContainerCount") : 0,
@@ -68,10 +68,16 @@ public final class ContractNbt {
 
     private static RewardSpec loadReward(CompoundTag tag) {
         ResourceLocation item = ResourceLocation.tryParse(tag.getString("CurrencyItemId"));
-        if (item == null || ColonyLogisticsConfig.isLegacyDefaultRewardItem(item)) {
-            item = ColonyLogisticsConfig.defaultTradePostCurrencyItemId();
+        int amount = tag.getInt("CurrencyAmount");
+        int legacyValue = ColonyLogisticsConfig.legacyCurrencyBaseValue(item);
+        if (item == null || legacyValue > 0) {
+            item = ColonyLogisticsConfig.defaultCurrencyItemId();
+            if (legacyValue > 1) {
+                long converted = (long) Math.max(0, amount) * legacyValue;
+                amount = converted > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) converted;
+            }
         }
-        return new RewardSpec(item, tag.getInt("CurrencyAmount"));
+        return new RewardSpec(item, amount);
     }
 
     private static CompoundTag saveFreightSpec(FreightJobSpec spec) {
